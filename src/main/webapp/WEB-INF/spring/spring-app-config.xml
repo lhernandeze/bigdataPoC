@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+        
+	<context:component-scan base-package="mx.isban.at" />
+
+	<!-- Enables the Spring MVC @Controller programming model -->
+    <mvc:annotation-driven enable-matrix-variables="true"/>
+
+	<import resource="spring-jms-amq-context.xml"/>
+
+	<!-- DispatcherServlet Context: defines this servlet's request-processing 
+		infrastructure -->
+	<!-- Handles HTTP GET requests for /resources/** by efficiently serving 
+		up static resources in the ${webappRoot}/resources directory -->
+	<mvc:resources mapping="/static/**" location="/static/" />
+
+	<!-- Resolves views selected for rendering by @Controllers to .jsp resources 
+		in the /WEB-INF/views directory -->
+	<bean id="tilesConfigurer"
+		class="org.springframework.web.servlet.view.tiles3.TilesConfigurer">
+		<property name="definitions">
+			<list>
+				<value>/WEB-INF/views/**/tiles3.xml</value>
+			</list>
+		</property>
+	</bean>
+	<bean id="tilesViewResolver"
+		class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+		<property name="viewClass">
+			<value>
+				org.springframework.web.servlet.view.tiles3.TilesView
+			</value>
+		</property>
+		<property name="order" value="0" />
+	</bean>
+	
+	<bean id="handler" class="mx.isban.at.poc.bigdata.oozie.jms.HandleRequestforJMS">
+	</bean>
+	
+	<!-- Create DataSource Bean -->
+    <bean id="impalaDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+        <property name="jndiName" value="java:comp/env/jdbc/impalaJDBC"/>
+    </bean>
+    
+    <bean id="impalaHandler" class="mx.isban.at.poc.bigdata.impala.jdbc.ImpalaJDBCHandler">
+	</bean>
+	
+</beans>
